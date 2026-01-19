@@ -1,0 +1,7 @@
+{
+  "name": "VEXOR Premium Menswear",
+  "description": "A high-end, modern men's fashion e-commerce platform with a minimalist aesthetic, featuring sharp red accents and comprehensive shopping and admin interfaces.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
