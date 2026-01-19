@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 // Added missing icon Search to the imports
 import { SlidersHorizontal, ChevronDown, Grid, List, Star, Search } from 'lucide-react';
-import { MOCK_PRODUCTS, CATEGORIES } from '../constants';
-import { useAppContext } from '../App';
+import { CATEGORIES, CATEGORY_HIERARCHY } from '../constants';
+import { useShopContext } from '../context/ShopContext';
+import { ProductCard } from '../components/product/ProductCard';
 
 const ShopPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { toggleWishlist, wishlist } = useAppContext();
+  const { toggleWishlist, wishlist, products } = useShopContext();
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('cat') || 'All');
   const [sortBy, setSortBy] = useState('Newest');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -18,9 +19,17 @@ const ShopPage: React.FC = () => {
     if (cat) setSelectedCategory(cat);
   }, [searchParams]);
 
-  const filteredProducts = MOCK_PRODUCTS.filter(p => {
+  const filteredProducts = products.filter(p => {
     if (selectedCategory === 'All') return true;
     if (selectedCategory === 'New') return p.isNew;
+    
+    // Check if selectedCategory is a parent category (e.g. T-Shirts)
+    // @ts-ignore
+    const subCategories = CATEGORY_HIERARCHY[selectedCategory];
+    if (subCategories && subCategories.length > 0) {
+      return subCategories.includes(p.category);
+    }
+
     return p.category === selectedCategory;
   }).sort((a, b) => {
     if (sortBy === 'Price: Low to High') return a.price - b.price;
@@ -96,61 +105,9 @@ const ShopPage: React.FC = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-8 md:gap-y-16">
-        {filteredProducts.map(product => {
-          const isWishlisted = wishlist.includes(product.id);
-          return (
-            <div key={product.id} className="group relative bg-white animate-fade-in">
-              <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-                <Link to={`/product/${product.id}`}>
-                  <img 
-                    src={product.images[0]} 
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  />
-                  {product.images[1] && (
-                    <img 
-                      src={product.images[1]} 
-                      alt={product.name}
-                      className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100" 
-                    />
-                  )}
-                </Link>
-                <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  {product.isNew && (
-                    <span className="bg-black text-white text-[9px] font-bold px-2 py-1 tracking-widest uppercase">New</span>
-                  )}
-                  {product.isSale && (
-                    <span className="bg-rose-600 text-white text-[9px] font-bold px-2 py-1 tracking-widest uppercase">Sale</span>
-                  )}
-                  {product.stock === 0 && (
-                    <span className="bg-gray-400 text-white text-[9px] font-bold px-2 py-1 tracking-widest uppercase">Sold Out</span>
-                  )}
-                </div>
-                <button 
-                  onClick={() => toggleWishlist(product.id)}
-                  className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-300 ${isWishlisted ? 'bg-rose-600 text-white' : 'bg-white/80 backdrop-blur-md text-black hover:bg-white'}`}
-                >
-                  <Star size={16} fill={isWishlisted ? 'currentColor' : 'none'} />
-                </button>
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-white/95 backdrop-blur-sm">
-                   <Link to={`/product/${product.id}`} className="block w-full text-center bg-black text-white py-2.5 text-[11px] font-bold tracking-widest uppercase hover:bg-rose-600 transition-colors">
-                    View Details
-                   </Link>
-                </div>
-              </div>
-              <div className="mt-4 flex flex-col gap-1 px-1">
-                <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-gray-400">{product.category}</h3>
-                <Link to={`/product/${product.id}`} className="text-sm font-bold tracking-tight hover:text-rose-600 transition-colors line-clamp-1 uppercase italic">{product.name}</Link>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm font-black">₹{product.price.toLocaleString()}</span>
-                  {product.originalPrice && (
-                    <span className="text-xs text-gray-400 line-through font-bold opacity-50">₹{product.originalPrice.toLocaleString()}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {filteredProducts.map(product => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
 
       {filteredProducts.length === 0 && (

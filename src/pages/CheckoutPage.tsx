@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, CreditCard, Truck, MapPin, CheckCircle2 } from 'lucide-react';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
 
 const CheckoutPage: React.FC = () => {
-  const { cart, setIsLoading } = useAppContext();
+  const { cart, setIsLoading, clearCart } = useShopContext();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
@@ -16,6 +16,7 @@ const CheckoutPage: React.FC = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
+      clearCart();
       setStep(3);
     }, 2000);
   };

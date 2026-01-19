@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, X, Star } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../constants';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
+import { ProductCard } from '../components/product/ProductCard';
 
 const SearchPage: React.FC = () => {
   const [query, setQuery] = useState('');
-  const { toggleWishlist, wishlist } = useAppContext();
+  const { toggleWishlist, wishlist } = useShopContext();
 
   const results = query.length > 2 
     ? MOCK_PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || p.category.toLowerCase().includes(query.toLowerCase()))
@@ -44,33 +45,9 @@ const SearchPage: React.FC = () => {
 
             {results.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {results.map(product => {
-                  const isWishlisted = wishlist.includes(product.id);
-                  return (
-                    <div key={product.id} className="group relative bg-white animate-fade-in">
-                      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-                        <Link to={`/product/${product.id}`}>
-                          <img 
-                            src={product.images[0]} 
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                          />
-                        </Link>
-                        <button 
-                          onClick={() => toggleWishlist(product.id)}
-                          className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-300 ${isWishlisted ? 'bg-rose-600 text-white' : 'bg-white/80 backdrop-blur-md text-black hover:bg-white'}`}
-                        >
-                          <Star size={16} fill={isWishlisted ? 'currentColor' : 'none'} />
-                        </button>
-                      </div>
-                      <div className="mt-4">
-                        <h4 className="text-[10px] font-black tracking-widest uppercase text-gray-400">{product.category}</h4>
-                        <Link to={`/product/${product.id}`} className="text-sm font-bold uppercase italic block hover:text-rose-600">{product.name}</Link>
-                        <span className="text-sm font-black mt-1 block">₹{product.price.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+                {results.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
               </div>
             ) : (
               <div className="py-20 text-center space-y-4">

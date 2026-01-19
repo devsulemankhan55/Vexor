@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Star, ShoppingBag, ShieldCheck, Truck, RotateCcw, ChevronRight } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../constants';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams();
-  const { addToCart, toggleWishlist, wishlist } = useAppContext();
-  const product = MOCK_PRODUCTS.find(p => p.id === id);
+  const { addToCart, toggleWishlist, wishlist, products } = useShopContext();
+  const product = products.find(p => p.id === id);
 
   const [selectedSize, setSelectedSize] = useState('');
   const [activeImage, setActiveImage] = useState(0);
@@ -162,7 +161,7 @@ const ProductDetailPage: React.FC = () => {
       <section className="mt-24 pt-24 border-t border-gray-100">
         <h2 className="text-3xl font-black italic tracking-tighter uppercase mb-12">Complete the Look</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {MOCK_PRODUCTS.slice(0, 4).map(p => (
+          {products.slice(0, 4).map(p => (
             <Link key={p.id} to={`/product/${p.id}`} className="group space-y-4">
               <div className="aspect-[3/4] overflow-hidden bg-gray-50">
                 <img src={p.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={p.name} />

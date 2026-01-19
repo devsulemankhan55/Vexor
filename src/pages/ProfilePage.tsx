@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Package, Heart, MapPin, User as UserIcon, LogOut, ChevronRight } from 'lucide-react';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAppContext();
+  const { user } = useShopContext();
 
   if (!user) return <div className="p-20 text-center">Please log in.</div>;
 

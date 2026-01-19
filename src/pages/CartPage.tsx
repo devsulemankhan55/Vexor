@@ -2,10 +2,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Plus, Minus, Trash2, ArrowRight, ShieldCheck } from 'lucide-react';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateCartQty } = useAppContext();
+  const { cart, removeFromCart, updateCartQty } = useShopContext();
   const navigate = useNavigate();
 
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);

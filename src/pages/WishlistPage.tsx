@@ -3,10 +3,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../constants';
-import { useAppContext } from '../App';
+import { useShopContext } from '../context/ShopContext';
 
 const WishlistPage: React.FC = () => {
-  const { wishlist, toggleWishlist } = useAppContext();
+  const { wishlist, toggleWishlist } = useShopContext();
   const wishlistedItems = MOCK_PRODUCTS.filter(p => wishlist.includes(p.id));
 
   if (wishlist.length === 0) {
